@@ -1,0 +1,16 @@
+{
+  "name": "sussyballs",
+  "private": true,
+  "version": "0.0.0",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "docs": "npx typedoc --watch  --entryPointStrategy expand ./src"
+  },
+  "devDependencies": {
+    "typedoc": "^0.22.15",
+    "typescript": "^4.5.4",
+    "vite": "^2.9.2"
+  }
+}

@@ -1,0 +1,7 @@
+{
+  "name": "Project for playing with balls",
+  "$schema": "https://typedoc.org/schema.json",
+  "entryPoints": ["./src/main.ts"],
+  "out" : "./docs",
+  "readme": "./readme.md"
+}
