@@ -124,8 +124,8 @@ export class Utils {
         preparedBoard[start.position.row][start.position.column] = AStarBoardValues.Start
         preparedBoard[end.position.row][end.position.column] = AStarBoardValues.End
         aStarInstance.setTable(preparedBoard)
-        let path = aStarInstance.getAStarPath()
-        return Utils.aStarPathToCoordinateList(path )
+        let path = aStarInstance.pleaseWork()
+        return Utils.aStarPathToCoordinateList(path)
     }
 
     static tBoardPositionToTuple(position: TBoardPosition): [number, number] {

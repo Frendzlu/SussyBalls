@@ -39,3 +39,11 @@
   left: 0%;
   top: 0%
 }
+
+.losingDiv {
+  position: absolute;
+  z-index: 1000;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.5);
+}

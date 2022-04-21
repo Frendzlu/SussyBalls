@@ -29,7 +29,7 @@ export class Game {
 
     /**
      * Also creates the board and draws it
-     * @param rootElementId The name of the table to be fetch by id, or created and appended to document body
+     * @param rootElementId The name of the table to be fetched by id, or created and appended to document body
      */
     constructor(rootElementId: string) {
         this.sideBoard = this.newTable("sideBoard")
@@ -37,6 +37,16 @@ export class Game {
         this.parentElement = (document.getElementById(rootElementId) || this.newTable(rootElementId)) as HTMLTableElement
         this.parentElement.innerHTML = ""
         console.log(this.sideBoardData)
+        document.createElement("div", {
+            id: "pointView",
+            style: new CSStyles({
+                width: "200px",
+                height: "100px",
+                position: "absolute",
+                top: "0",
+                right: "0"
+            })
+        }).appendTo(document.body)
         this.createBoard()
         this.generateNewBalls()
         this.placeGeneratedBalls()
@@ -71,20 +81,20 @@ export class Game {
                         onclick: (e) => {
                             e.stopPropagation()
                             console.log(`Cell onclick ${this.parentElement.id}-cell-[${i},${j}]}`)
-                            this.cellOnMouseOver(this.board[i][j])
+                            this.cellOnMouseEnter(this.board[i][j])
                             //this.cellOnClick(this.board[i][j])
                             this.drawBoard()
                         },
                         // onmouseenter: (e) => {
                         //     e.stopPropagation()
                         //     console.log(`Cell onmouseenter ${this.parentElement.id}-cell-[${i},${j}]}`)
-                        //     this.cellOnMouseOver(this.board[i][j])
+                        //     this.cellOnMouseEnter(this.board[i][j])
                         //     this.drawBoard()
                         // },
                         // onmouseleave: (e) => {
                         //     e.stopPropagation()
                         //     console.log(`Cell onmouseleave ${this.parentElement.id}-cell-[${i},${j}]}`)
-                        //     this.cellOnMouseOut()
+                        //     this.cellOnMouseLeave()
                         //     this.drawBoard()
                         // },
                         storedData: {
@@ -120,6 +130,8 @@ export class Game {
                 }
             }
         }
+        let x = document.getElementById("pointView")
+        x!.innerText = String(this.points)
     }
 
     /** Places a ball on the board
@@ -140,6 +152,10 @@ export class Game {
         this.board[from.row][from.column].ball = undefined
     }
 
+    /** Function handling the onclick event on ball
+     * Toggles the ball highlight and sets {@link Game.chosenElement}
+     * @param cell The cell which has been clicked
+     * */
     ballOnClick(cell: TBoardPiece) {
         if (cell.htmlElement.storedData?.isClicked) {
             Utils.toggleIsClicked(cell)
@@ -152,7 +168,11 @@ export class Game {
         }
     }
 
-    cellOnMouseOver(cell: TBoardPiece) {
+    /** Function handling the onmouseenter event on cell
+     * If {@link Game.chosenElement} is not undefined, draws a path from it to the entered cell
+     * @param cell The cell which has been entered
+     * */
+    cellOnMouseEnter(cell: TBoardPiece) {
         if (this.chosenElement) {
             if (cell.color === undefined) {
                 let path = Utils.getAStarPathFor(this.board, this.chosenElement, cell)
@@ -166,13 +186,19 @@ export class Game {
             }
         }
     }
-
-    cellOnMouseOut() {
+    /** Function handling the onmouseleave event on cell
+     * If {@link Game.chosenElement} is not undefined, clears all background colors
+     * */
+    cellOnMouseLeave() {
         if (this.chosenElement) {
             Utils.clearCellBackgroundIn(this.board)
         }
     }
 
+    /** Function handling the onclick event on cell
+     * If {@link Game.chosenElement} is not undefined and a path can be found, moves the ball to the clicked cell
+     * @param cell The cell which has been clicked
+     * */
     cellOnClick(cell: TBoardPiece) {
         if (this.chosenElement) {
             if (Utils.getAStarPathFor(this.board, this.chosenElement, cell)){
@@ -214,7 +240,7 @@ export class Game {
         }
     }
 
-    /** Checks if all of the spaces inside the board have been used up.
+    /** Checks if all the spaces inside the board have been used up.
      * If so, shows an overlay on top of the page */
     private onGameLost() {
         document.createElement("p", {

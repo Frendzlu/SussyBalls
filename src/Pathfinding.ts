@@ -226,6 +226,60 @@ export class AStar {
         return chosenConns
     }
 
+    pleaseWork(start?: Point, end?: Point): Point[] | false {
+        let startPoint: AStarPoint = (start || this.start) as AStarPoint
+        let endPoint: AStarPoint = (end || this.end)  as AStarPoint
+        let openList: AStarPoint[] = []
+        let closedList: AStarPoint[] = []
+        let returnList: Point[] =  []
+        startPoint.cost = this.getEstimatedDistance(startPoint, endPoint) * AStar.ORTHOGONAL_MVT_COST
+        startPoint.parent = startPoint
+        let foundPoint: AStarPoint | undefined = undefined
+        openList.push(startPoint)
+        while (openList.length) {
+            let lowestCostPoint = this.getLowestCostFrom(openList)
+            console.log("Lowest cost:", lowestCostPoint)
+            if (lowestCostPoint.id == endPoint.id) {
+                foundPoint = lowestCostPoint
+                break
+            } else {
+                for (let conn of lowestCostPoint.connections) {
+                    let cPoint = conn.point as AStarPoint
+                    if (this.ALLOWED_CONNECTIONS.includes(conn.type)) {
+                        cPoint.cost = lowestCostPoint.cost + conn.cost + this.getEstimatedDistance(cPoint, endPoint) * AStar.ORTHOGONAL_MVT_COST
+                        cPoint.parent = lowestCostPoint
+                        console.log("Lowest cost:", lowestCostPoint)
+                        console.log("cpoint:", cPoint)
+                        console.log("closed",closedList.map(point => point.id).includes(cPoint.id))
+                        console.log("open", closedList.map(point => point.id).includes(cPoint.id))
+                        if (closedList.map(point => point.id).includes(cPoint.id)){
+
+                        } else if (openList.map(point => point.id).includes(cPoint.id)){
+
+                        } else {
+                            openList.push(cPoint)
+                        }
+                    }
+                }
+                openList.splice(openList.indexOf(openList.find(el => el.id == lowestCostPoint.id) as AStarPoint), 1)
+                openList.forEach(el => console.log(el))
+                closedList.push(lowestCostPoint)
+            }
+        } console.log(foundPoint)
+        if (foundPoint) {
+            let counter = 0
+            while (foundPoint.id != startPoint.id) {
+                returnList.push(foundPoint)
+                foundPoint = foundPoint.parent
+                console.log(foundPoint)
+                console.table(returnList)
+                counter++
+                if (counter > 5) break
+            }
+            return returnList
+        } else return false
+    }
+
     // kurwa() {
     //     let open: ListNode[] = [{
     //         point: this.start,
@@ -295,6 +349,9 @@ export class AStar {
     //     }
     //     return currentNode.point === this.end ? closed : false
     // }
+    private getLowestCostFrom(openList: AStarPoint[]) {
+        return openList.reduce((prev, curr) => curr.cost < prev.cost ? curr: prev)
+    }
 }
 // type ListNode = {
 //     point: Point
@@ -302,3 +359,8 @@ export class AStar {
 //     hCost: number
 //     parent?: ListNode
 // }
+
+interface AStarPoint extends Point {
+    cost: number
+    parent: AStarPoint
+}
